@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import { ShoppingCart } from "lucide-react";
 import hero from "../assets/hero.jpg";
@@ -10,6 +10,8 @@ import { addToCart } from "../store/cartSlice";
 export default function Home() {
   const [myData, setMyData] = useState([]);
   const dispatch = useDispatch();
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const navigate = useNavigate();
 
   async function fetchData() {
     const res = await fetch("https://dummyjson.com/recipes");
@@ -36,23 +38,30 @@ export default function Home() {
   };
 
   const handleAdd = (product) => {
-    dispatch(
-      addToCart({
+    if  (!currentUser) {
+      alert("You must be logged in to add items to the cart.");
+      navigate('/login');
+      return;
+    }else{
+      
+      dispatch(
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: product.price || 0,
+          img: product.image,
+          qty: 1,
+        })
+      );
+      addLocalCart({
         id: product.id,
         name: product.name,
         price: product.price || 0,
-        img: product.image,
+        image: product.image,
         qty: 1,
-      })
-    );
-    addLocalCart({
-      id: product.id,
-      name: product.name,
-      price: product.price || 0,
-      image: product.image,
-      qty: 1,
-    });
+      });
   };
+}
 
   return (
     <>
