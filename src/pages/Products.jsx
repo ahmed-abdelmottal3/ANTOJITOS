@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import products from "../assets/products.webp";
 import { ShoppingCart } from "lucide-react";
@@ -10,6 +10,8 @@ export default function Products() {
   const [myData, setMyData] = useState([]);
   const [filter, setFilter] = useState("All");
   const dispatch = useDispatch();
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const navigate = useNavigate();
 
   async function FetchData() {
     try {
@@ -46,23 +48,30 @@ export default function Products() {
   };
 
   const handleAdd = (product) => {
-    dispatch(
-      addToCart({
+    if  (!currentUser) {
+      alert("You must be logged in to add items to the cart.");
+      navigate('/login');
+      return;
+    }else{
+      
+      dispatch(
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: product.price || 0,
+          img: product.image,
+          qty: 1,
+        })
+      );
+      addLocalCart({
         id: product.id,
         name: product.name,
         price: product.price || 0,
-        img: product.image,
+        image: product.image,
         qty: 1,
-      })
-    );
-    addLocalCart({
-      id: product.id,
-      name: product.name,
-      price: product.price || 0,
-      image: product.image,
-      qty: 1,
-    });
+      });
   };
+}
 
   const categories = ["All", "Dinner", "Lunch", "Snack", "Dessert"];
 

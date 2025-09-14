@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import UP from "./components/UP";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -72,9 +73,11 @@ function AnimatedRoutes() {
         <Route
           path="/cart"
           element={
+            <ProtectedRoute>
             <PageWrapper>
               <Cart />
             </PageWrapper>
+            </ProtectedRoute>
           }
         />
         <Route
